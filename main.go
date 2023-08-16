@@ -12,9 +12,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//var (
-//	logLevel = flag.String("level", "info", "Level to set logging at. [debug, info, warning, error]")
-//)
+var (
+	logLevel = flag.String("level", "info", "Level to set logging at. [debug, info, warning, error]")
+)
 
 func main() {
 	flag.Parse()
