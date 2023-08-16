@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 
 	"github.com/connoraubry/chess-client/client"
 	log "github.com/sirupsen/logrus"
@@ -20,11 +19,15 @@ func main() {
 	flag.Parse()
 	c := client.New()
 	c.SetupLogging(*logLevel)
+	log.Debug(c)
 
-	if len(os.Args) > 1 {
-		switch os.Args[1] {
+	args := flag.Args()
+	log.Info(args)
+
+	if len(args) > 0 {
+		switch args[0] {
 		case "config":
-			client.Config()
+			client.HandleConfig(args)
 		default:
 			fmt.Println(client.HelpString)
 		}
@@ -38,12 +41,11 @@ func main() {
 	} else {
 		log.WithField("fen", fen).Info("Got FEN")
 	}
-
 	//newGameId := createNewGame()
 	//fmt.Println(newGameId)
 }
-func getTest() string {
-	resp, err := http.Get("http://localhost:3030/api/v1/test")
+func getTest(dest string) string {
+	resp, err := http.Get(dest)
 	if err != nil {
 		log.Error(err)
 	}

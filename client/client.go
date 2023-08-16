@@ -6,12 +6,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type Client struct{}
+type Client struct {
+	cfg ClientConfig
+}
 
 func New() *Client {
 
 	c := &Client{}
-
+	c.cfg = LoadConfig()
 	return c
 }
 

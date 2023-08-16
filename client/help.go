@@ -43,3 +43,16 @@ var configHelpCommands = map[string]string{
 	"set": "Set a configuration property",
 }
 var ConfigHelp string = HelpBuilder("Configure chess app", "chess config [command]", configHelpCommands)
+
+var configGetHelpCommands = map[string]string{
+	"server": "Get configured server",
+	"port":   "Get configured port",
+	"token":  "Get user token",
+	"all":    "Get all configured values",
+}
+var ConfigGetHelp string = HelpBuilder("Get Configuration Values", "chess config get [option]", configGetHelpCommands)
+var configSetHelpCommands = map[string]string{
+	"server [val]": "Set server (string)",
+	"port [val]":   "Set port (int)",
+}
+var ConfigSetHelp string = HelpBuilder("Set Configuration Values", "chess config set [option] [value]", configGetHelpCommands)
