@@ -1,1 +1,5 @@
-go build -o client main.go 
+build:
+	go build -o bin/chess main.go 
+
+test:
+	go test ./...

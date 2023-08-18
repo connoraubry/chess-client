@@ -37,6 +37,8 @@ func (c *Client) commandHelpHandler(args []string) {
 		switch args[0] {
 		case "config":
 			helpConfig(args[1:])
+		case "ping":
+			fmt.Println(HelpBuilder("ping the server", "ping", map[string]string{}))
 		default:
 			fmt.Println("Help message not added yet!")
 		}

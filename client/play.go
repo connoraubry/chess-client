@@ -71,8 +71,8 @@ func (c *Client) CommandHandler(command string) {
 }
 func (c *Client) commandPingHandler() {
 	server := c.GetServer()
-
 	log.WithField("server", server).Info("Sending new request to server")
+	c.Ping()
 }
 func (c *Client) commandNewHandler(args []string) {
 	server := c.GetServer()

@@ -99,7 +99,7 @@ func ResetConfig() ClientConfig {
 	return NewConfig()
 }
 func NewConfig() ClientConfig {
-	c := ClientConfig{Port: 3030, Server: "https://localhost"}
+	c := ClientConfig{Port: 3030, Server: "http://localhost"}
 	SaveConfig(c)
 	return c
 }
