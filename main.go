@@ -15,35 +15,21 @@ var (
 	logLevel = flag.String("level", "info", "Level to set logging at. [debug, info, warning, error]")
 )
 
+var helloMsg string = `Welcome to the chess client!
+
+Type 'help' for more information.
+`
+
 func main() {
 	flag.Parse()
 	c := client.New()
 	c.SetupLogging(*logLevel)
 	log.Debug(c)
 
-	args := flag.Args()
-	log.Info(args)
-
-	if len(args) > 0 {
-		switch args[0] {
-		case "config":
-			client.HandleConfig(args)
-		default:
-			fmt.Println(client.HelpString)
-		}
-	} else {
-		log.Debug("No arguments provided")
-		//fmt.Println(client.HelpString)
-	}
-	fen, err := getFEN(3)
-	if err != nil {
-		log.Error(err)
-	} else {
-		log.WithField("fen", fen).Info("Got FEN")
-	}
-	//newGameId := createNewGame()
-	//fmt.Println(newGameId)
+	fmt.Println(helloMsg)
+	c.PlayHandler()
 }
+
 func getTest(dest string) string {
 	resp, err := http.Get(dest)
 	if err != nil {

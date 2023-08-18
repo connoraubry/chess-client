@@ -13,28 +13,32 @@ type ClientConfig struct {
 	Port   int
 	Server string
 	Token  string
+	User   string
 }
 
 const CONFIG_PATH = "./config.yaml"
 
-func HandleConfig(args []string) {
+func (cfg *ClientConfig) Print() {
+	fmt.Printf("Server: %v\n", cfg.Server)
+	fmt.Printf("Port: %v\n", cfg.Port)
+	fmt.Printf("User: %v\n", cfg.User)
+	fmt.Printf("Token: %v\n", cfg.Token)
+}
+
+func ConfigHandler(args []string) {
 	if len(args) > 1 {
 		switch args[1] {
 		case "get":
 			log.Debug("Going into config get")
-			HandleGet(args)
+			configGetHandler(args)
 		case "set":
 			log.Debug("Going into config set")
-			HandleSet(args)
-		default:
-			fmt.Println(ConfigHelp)
+			configSetHandler(args)
 		}
-	} else {
-		fmt.Println(ConfigHelp)
 	}
 }
 
-func HandleGet(args []string) {
+func configGetHandler(args []string) {
 	cfg := LoadConfig()
 
 	if len(args) > 2 {
@@ -47,9 +51,7 @@ func HandleGet(args []string) {
 		case "token":
 			fmt.Println(cfg.Token)
 		case "all":
-			fmt.Printf("Server: %v\n", cfg.Server)
-			fmt.Printf("Port: %v\n", cfg.Port)
-			fmt.Printf("Token: %v\n", cfg.Token)
+			fmt.Printf("%+v\n", cfg)
 		default:
 			fmt.Println(ConfigGetHelp)
 		}
@@ -58,7 +60,7 @@ func HandleGet(args []string) {
 	}
 }
 
-func HandleSet(args []string) {
+func configSetHandler(args []string) {
 	cfg := LoadConfig()
 	writeFlag := false
 	if len(args) > 3 {
@@ -93,12 +95,15 @@ func LoadConfig() ClientConfig {
 
 	return ReadFile()
 }
-
+func ResetConfig() ClientConfig {
+	return NewConfig()
+}
 func NewConfig() ClientConfig {
 	c := ClientConfig{Port: 3030, Server: "https://localhost"}
 	SaveConfig(c)
 	return c
 }
+
 func ReadFile() ClientConfig {
 
 	var cfg ClientConfig

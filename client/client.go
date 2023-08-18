@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -17,12 +18,11 @@ func New() *Client {
 	return c
 }
 
-func (c *Client) SetupLogging(logLevel string) {
+func (c *Client) GetServer() string {
+	return fmt.Sprintf("%s:%d", c.cfg.Server, c.cfg.Port)
+}
 
-	//log.SetFormatter(&log.TextFormatter{
-	//	FullTimestamp:   true,
-	//	TimestampFormat: "2006-01-02 15:04:05",
-	//})
+func (c *Client) SetupLogging(logLevel string) {
 
 	var level log.Level
 
@@ -39,5 +39,5 @@ func (c *Client) SetupLogging(logLevel string) {
 		level = log.DebugLevel
 	}
 	log.SetLevel(level)
-	log.WithField("level", level).Info("Logging set up")
+	log.WithField("level", level).Debug("Logging set up")
 }
