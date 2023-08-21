@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	logLevel = flag.String("level", "info", "Level to set logging at. [debug, info, warning, error]")
+	logLevel = flag.String("level", "debug", "Level to set logging at. [debug, info, warning, error]")
 )
 
 var helloMsg string = `Welcome to the chess client!

@@ -25,68 +25,45 @@ func (cfg *ClientConfig) Print() {
 	fmt.Printf("Token: %v\n", cfg.Token)
 }
 
-func ConfigHandler(args []string) {
-	if len(args) > 1 {
-		switch args[1] {
-		case "get":
-			log.Debug("Going into config get")
-			configGetHandler(args)
+func (c *Client) commandConfigHandler(args []string) {
+	if len(args) > 0 {
+
+		switch args[0] {
+		case "reset":
+			c.cfg = ResetConfig()
 		case "set":
-			log.Debug("Going into config set")
-			configSetHandler(args)
-		}
-	}
-}
-
-func configGetHandler(args []string) {
-	cfg := LoadConfig()
-
-	if len(args) > 2 {
-
-		switch args[2] {
-		case "server":
-			fmt.Println(cfg.Server)
-		case "port":
-			fmt.Println(cfg.Port)
-		case "token":
-			fmt.Println(cfg.Token)
-		case "all":
-			fmt.Printf("%+v\n", cfg)
+			c.commandConfigSetHandler(args[1:])
 		default:
-			fmt.Println(ConfigGetHelp)
+			printConfigHelp()
 		}
 	} else {
-		fmt.Println(ConfigGetHelp)
+		c.cfg.Print()
 	}
 }
-
-func configSetHandler(args []string) {
-	cfg := LoadConfig()
+func (c *Client) commandConfigSetHandler(args []string) {
 	writeFlag := false
-	if len(args) > 3 {
-		switch args[2] {
+	if len(args) > 1 {
+		switch args[0] {
 		case "server":
-			cfg.Server = args[3]
+			c.cfg.Server = args[1]
 			writeFlag = true
 		case "port":
-			newPort, err := strconv.Atoi(args[3])
+			newPort, err := strconv.Atoi(args[1])
 			if err != nil {
-				log.Fatalf("Invalid integer provided: %v", args[3])
+				log.Fatalf("Invalid integer provided: %v", args[1])
 			}
-			cfg.Port = newPort
+			c.cfg.Port = newPort
 			writeFlag = true
 		default:
-			fmt.Println(ConfigSetHelp)
+			printConfigSetHelp()
 		}
 	} else {
-		fmt.Println(ConfigSetHelp)
+		printConfigHelp()
 	}
 	if writeFlag {
-		SaveConfig(cfg)
+		SaveConfig(c.cfg)
 	}
-
 }
-
 func LoadConfig() ClientConfig {
 	if _, err := os.Stat(CONFIG_PATH); err != nil {
 		log.Info("Config file does not exist. Creating")

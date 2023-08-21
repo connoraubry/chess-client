@@ -5,12 +5,18 @@ import (
 	"strings"
 )
 
-func HelpBuilder(name string, usage string, commands map[string]string) string {
+type entry struct {
+	command string
+	help    string
+}
+
+func HelpBuilder(name string, usage string, commands []entry) string {
 	var helpString string
 	var fmtCmd []string
 
-	for cmd, help := range commands {
-		fmtCmd = append(fmtCmd, fmt.Sprintf("  %-16s %s", cmd, help))
+	for _, entry := range commands {
+
+		fmtCmd = append(fmtCmd, fmt.Sprintf("  %-20s %s", entry.command, entry.help))
 	}
 	combinedString := strings.Join(fmtCmd, "\n")
 
@@ -33,26 +39,32 @@ Available Commands:
 
 func (c *Client) commandHelpHandler(args []string) {
 
+	var no_commands []entry
+
 	if len(args) > 0 {
 		switch args[0] {
 		case "config":
 			helpConfig(args[1:])
 		case "ping":
-			fmt.Println(HelpBuilder("ping the server", "ping", map[string]string{}))
+			fmt.Println(HelpBuilder("ping the server", "ping", no_commands))
+		case "info":
+			fmt.Println(HelpBuilder("Information on the chess cli", "info", no_commands))
+		case "quit":
+			fmt.Println(HelpBuilder("Quit the client", "quit", no_commands))
 		default:
 			fmt.Println("Help message not added yet!")
 		}
 	} else {
-		var helpLine = map[string]string{
-			"help [command]":   "For information on a command",
-			"config [options]": "For configuring the client",
-			"new [options]":    "Create a new game",
-			"join [options]":   "Join an existing game",
-			"info":             "Information on the client",
-			"ping":             "Ping the server. Test connection",
-			"quit":             "Quit",
+		var helpLine = []entry{
+			{"help [command]", "For information on a command"},
+			{"config [options]", "For configuring the client"},
+			{"new [options]", "Create a new game"},
+			{"join [options]", "Join an existing game"},
+			{"info", "Information on the client"},
+			{"ping", "Ping the server. Test connection"},
+			{"quit", "Quit"},
 		}
-		fmt.Println(HelpBuilder("Chess client", "[command] [options", helpLine))
+		fmt.Println(HelpBuilder("Chess client", "[command] [options]", helpLine))
 	}
 }
 
@@ -73,38 +85,22 @@ func helpConfig(args []string) {
 }
 
 func printConfigHelp() {
-	var helpConfigHandlerCommands = map[string]string{
-		"reset":             "Reset the configuration back to base",
-		"set [arg] [value]": "Set a configuration property",
+	var helpConfigHandlerCommands = []entry{
+		{"reset", "Reset the configuration back to base"},
+		{"set [arg] [value]", "Set a configuration property"},
 	}
 	fmt.Println(HelpBuilder("Chess config handler", "config [command]", helpConfigHandlerCommands))
 }
 
 func printConfigSetHelp() {
-	var helpConfigSetHandlerCommands = map[string]string{
-		"server [val]": "Set server (string)",
-		"port [val]":   "Set port (int)",
+	var helpConfigSetHandlerCommands = []entry{
+		{"server [val]", "Set server (string)"},
+		{"port [val]", "Set port (int)"},
 	}
 	fmt.Println(HelpBuilder("Set a config value.", "config set [arg] [value]", helpConfigSetHandlerCommands))
 }
+
 func printConfigResetHelp() {
-	var helpConfigSetHandlerCommands = map[string]string{}
+	var helpConfigSetHandlerCommands []entry
 	fmt.Println(HelpBuilder("Resets the config back to default.", "config reset", helpConfigSetHandlerCommands))
 }
-
-var mainHelpCommands = map[string]string{
-	"config": "Manage CLI configuration",
-	"join":   "Join a game",
-	"new":    "Create a new game",
-}
-
-var HelpString string = HelpBuilder("Chess client", "chess [command]", mainHelpCommands)
-
-var configGetHelpCommands = map[string]string{
-	"server": "Get configured server",
-	"port":   "Get configured port",
-	"token":  "Get user token",
-	"all":    "Get all configured values",
-}
-var ConfigGetHelp string = HelpBuilder("Get Configuration Values", "chess config get [option]", configGetHelpCommands)
-var ConfigSetHelp string = HelpBuilder("Set Configuration Values", "chess config set [option] [value]", configGetHelpCommands)

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"strconv"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -40,12 +39,6 @@ func (c *Client) CommandHandler(command string) {
 
 	spaceSplit := strings.Split(command, " ")
 
-	/*
-		help [help]
-		new [user / game]
-		config
-		join [ID]
-	*/
 	if len(spaceSplit) > 0 {
 		cmd := spaceSplit[0]
 		args := spaceSplit[1:]
@@ -58,6 +51,7 @@ func (c *Client) CommandHandler(command string) {
 			c.commandConfigHandler(args)
 		case "new":
 			log.Debug("new inputted")
+			c.commandNewHandler(args)
 		case "join":
 			log.Debug("join inputted")
 		case "info":
@@ -69,52 +63,27 @@ func (c *Client) CommandHandler(command string) {
 		}
 	}
 }
+
+func (c *Client) commandNewHandler(args []string) {
+	if len(args) > 0 {
+		switch args[0] {
+		case "game":
+			log.Debug("new game inputted")
+			log.Info("Creating a new game")
+			gameID, err := c.CreateNewGame()
+			if err != nil {
+				log.Errorf("Error creating new game: %v", err)
+			} else {
+				log.WithField("id", gameID).Info("New game created")
+			}
+		}
+	} else {
+		log.Debug("No args provided to new")
+	}
+}
+
 func (c *Client) commandPingHandler() {
 	server := c.GetServer()
 	log.WithField("server", server).Info("Sending new request to server")
 	c.Ping()
-}
-func (c *Client) commandNewHandler(args []string) {
-	server := c.GetServer()
-	log.WithField("server", server).Info("Sending new request to server")
-}
-func (c *Client) commandConfigHandler(args []string) {
-	if len(args) > 0 {
-
-		switch args[0] {
-		case "reset":
-			c.cfg = ResetConfig()
-		case "set":
-			c.commandConfigSetHandler(args[1:])
-		default:
-			printConfigHelp()
-		}
-	} else {
-		c.cfg.Print()
-	}
-}
-
-func (c *Client) commandConfigSetHandler(args []string) {
-	writeFlag := false
-	if len(args) > 1 {
-		switch args[0] {
-		case "server":
-			c.cfg.Server = args[1]
-			writeFlag = true
-		case "port":
-			newPort, err := strconv.Atoi(args[1])
-			if err != nil {
-				log.Fatalf("Invalid integer provided: %v", args[1])
-			}
-			c.cfg.Port = newPort
-			writeFlag = true
-		default:
-			printConfigSetHelp()
-		}
-	} else {
-		printConfigHelp()
-	}
-	if writeFlag {
-		SaveConfig(c.cfg)
-	}
 }
