@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/fatih/color"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 )
@@ -14,6 +15,7 @@ type ClientConfig struct {
 	Server string
 	Token  string
 	User   string
+	Color  string
 }
 
 const CONFIG_PATH = "./config.yaml"
@@ -40,6 +42,20 @@ func (c *Client) commandConfigHandler(args []string) {
 		c.cfg.Print()
 	}
 }
+
+func printConfigHelp() {
+	var helpConfigHandlerCommands = []entry{
+		{"reset", "Reset the configuration back to base"},
+		{"set [arg] [value]", "Set a configuration property"},
+	}
+	fmt.Println(HelpBuilder("Chess config handler", "config [command]", helpConfigHandlerCommands))
+}
+
+func printConfigResetHelp() {
+	var helpConfigSetHandlerCommands []entry
+	fmt.Println(HelpBuilder("Resets the config back to default.", "config reset", helpConfigSetHandlerCommands))
+}
+
 func (c *Client) commandConfigSetHandler(args []string) {
 	writeFlag := false
 	if len(args) > 1 {
@@ -54,17 +70,57 @@ func (c *Client) commandConfigSetHandler(args []string) {
 			}
 			c.cfg.Port = newPort
 			writeFlag = true
+		case "color":
+			writeFlag = c.configSetColor(args[1])
 		default:
 			printConfigSetHelp()
 		}
 	} else {
-		printConfigHelp()
+		printConfigSetHelp()
 	}
 	if writeFlag {
 		SaveConfig(c.cfg)
 	}
 }
+
+func (c *Client) configSetColor(color string) bool {
+	log.Debugf("Requesting color change to %v", color)
+	oldColor := c.cfg.Color
+	c.cfg.Color = color
+	res := c.SetupColor()
+
+	if !res {
+		c.cfg.Color = oldColor
+		log.Errorf("Invalid color: %v", color)
+		printConfigSetColorHelp()
+	}
+	return res
+}
+
+func printConfigSetHelp() {
+	var helpConfigSetHandlerCommands = []entry{
+		{"server [val]", "Set server (string)"},
+		{"port [val]", "Set port (int)"},
+		{"color [val]", "Change color of prompt"},
+	}
+	fmt.Println(HelpBuilder("Set a config value.", "config set [arg] [value]", helpConfigSetHandlerCommands))
+}
+
+func printConfigSetColorHelp() {
+	var helpConfigSetColorCommands = []entry{
+		{color.RedString("red"), ""},
+		{color.YellowString("yellow"), ""},
+		{color.BlueString("blue"), ""},
+		{color.GreenString("green"), ""},
+		{color.CyanString("cyan"), ""},
+		{color.MagentaString("magenta"), ""},
+		{"white", ""},
+	}
+	fmt.Println(HelpBuilder("Set the terminal color", "config set color [value]", helpConfigSetColorCommands))
+}
+
 func LoadConfig() ClientConfig {
+
 	if _, err := os.Stat(CONFIG_PATH); err != nil {
 		log.Info("Config file does not exist. Creating")
 		return NewConfig()
@@ -76,7 +132,7 @@ func ResetConfig() ClientConfig {
 	return NewConfig()
 }
 func NewConfig() ClientConfig {
-	c := ClientConfig{Port: 3030, Server: "http://localhost"}
+	c := ClientConfig{Port: 3030, Server: "http://localhost", Color: "white"}
 	SaveConfig(c)
 	return c
 }

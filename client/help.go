@@ -73,7 +73,7 @@ func helpConfig(args []string) {
 	if len(args) > 0 {
 		switch args[0] {
 		case "set":
-			printConfigSetHelp()
+			helpConfigSet(args[1:])
 		case "reset":
 			printConfigResetHelp()
 		default:
@@ -83,24 +83,16 @@ func helpConfig(args []string) {
 		printConfigHelp()
 	}
 }
+func helpConfigSet(args []string) {
 
-func printConfigHelp() {
-	var helpConfigHandlerCommands = []entry{
-		{"reset", "Reset the configuration back to base"},
-		{"set [arg] [value]", "Set a configuration property"},
+	if len(args) > 0 {
+		switch args[0] {
+		case "color":
+			printConfigSetColorHelp()
+		default:
+			printConfigSetHelp()
+		}
+	} else {
+		printConfigSetHelp()
 	}
-	fmt.Println(HelpBuilder("Chess config handler", "config [command]", helpConfigHandlerCommands))
-}
-
-func printConfigSetHelp() {
-	var helpConfigSetHandlerCommands = []entry{
-		{"server [val]", "Set server (string)"},
-		{"port [val]", "Set port (int)"},
-	}
-	fmt.Println(HelpBuilder("Set a config value.", "config set [arg] [value]", helpConfigSetHandlerCommands))
-}
-
-func printConfigResetHelp() {
-	var helpConfigSetHandlerCommands []entry
-	fmt.Println(HelpBuilder("Resets the config back to default.", "config reset", helpConfigSetHandlerCommands))
 }

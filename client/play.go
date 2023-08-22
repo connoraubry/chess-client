@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/fatih/color"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -16,7 +17,9 @@ func (c *Client) PlayHandler() {
 
 	reader := bufio.NewReader(os.Stdin)
 	for {
+		color.Set(c.colorHandler)
 		fmt.Print(TERM_HEADER)
+		color.Unset()
 
 		cmd, _ := reader.ReadString('\n')
 

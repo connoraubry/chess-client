@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/fatih/color"
 	log "github.com/sirupsen/logrus"
 )
 
 type Client struct {
-	cfg ClientConfig
+	cfg          ClientConfig
+	colorHandler color.Attribute
 }
 
 func New() *Client {
@@ -40,4 +42,27 @@ func (c *Client) SetupLogging(logLevel string) {
 	}
 	log.SetLevel(level)
 	log.WithField("level", level).Debug("Logging set up")
+}
+
+func (c *Client) SetupColor() bool {
+	switch c.cfg.Color {
+	case "red":
+		c.colorHandler = color.FgRed
+	case "yellow":
+		c.colorHandler = color.FgYellow
+	case "blue":
+		c.colorHandler = color.FgBlue
+	case "green":
+		c.colorHandler = color.FgGreen
+	case "cyan":
+		c.colorHandler = color.FgCyan
+	case "magenta":
+		c.colorHandler = color.FgMagenta
+	case "white":
+		c.colorHandler = color.FgWhite
+	default:
+		c.colorHandler = color.FgWhite
+		return false
+	}
+	return true
 }
