@@ -17,6 +17,7 @@ func New() *Client {
 
 	c := &Client{}
 	c.cfg = LoadConfig()
+	c.SetupColor()
 	return c
 }
 
