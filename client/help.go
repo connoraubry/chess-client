@@ -49,6 +49,8 @@ func (c *Client) commandHelpHandler(args []string) {
 			fmt.Println(HelpBuilder("ping the server", "ping", no_commands))
 		case "info":
 			fmt.Println(HelpBuilder("Information on the chess cli", "info", no_commands))
+		case "new":
+			helpNew(args[1:])
 		case "quit":
 			fmt.Println(HelpBuilder("Quit the client", "quit", no_commands))
 		default:
@@ -65,6 +67,19 @@ func (c *Client) commandHelpHandler(args []string) {
 			{"quit", "Quit"},
 		}
 		fmt.Println(HelpBuilder("Chess client", "[command] [options]", helpLine))
+	}
+}
+
+func helpNew(args []string) {
+	if len(args) > 0 {
+		switch args[0] {
+		case "game":
+			printNewGameHelp()
+		default:
+			printNewHelp()
+		}
+	} else {
+		printNewHelp()
 	}
 }
 

@@ -143,3 +143,35 @@ func (c *Client) GetCurrentGame() (gameResp, error) {
 	err = json.Unmarshal(body, &result)
 	return result, err
 }
+
+func (c *Client) TakeMove(move string) error {
+	url := fmt.Sprintf("%v%v", c.getBaseAddress(), "move")
+
+	type takeMoveRequest struct {
+		Move  string
+		ID    int
+		Token string
+	}
+
+	req := takeMoveRequest{Move: move, ID: c.cfg.GameID, Token: c.cfg.Token}
+	reqByte, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(reqByte))
+	if err != nil {
+		return err
+	}
+	log.Info("Successfully sent /move POST request")
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return fmt.Errorf("STATUS returned %v. %v", resp.Status, string(body))
+	}
+	return nil
+}

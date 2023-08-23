@@ -1,6 +1,10 @@
 package client
 
-import log "github.com/sirupsen/logrus"
+import (
+	"fmt"
+
+	log "github.com/sirupsen/logrus"
+)
 
 func NewHandler(args []string) {
 	if len(args) > 1 {
@@ -9,4 +13,15 @@ func NewHandler(args []string) {
 			log.Info("Creating new game")
 		}
 	}
+}
+
+func printNewHelp() {
+	var helpLine = []entry{
+		{"game", "Create a new game"},
+	}
+	fmt.Println(HelpBuilder("New game creator", "new [option]", helpLine))
+}
+
+func printNewGameHelp() {
+	fmt.Println(HelpBuilder("Create a new game", "new game", []entry{}))
 }

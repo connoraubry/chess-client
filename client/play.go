@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/connoraubry/chessbot-go/engine"
 	"github.com/fatih/color"
 	log "github.com/sirupsen/logrus"
 )
@@ -65,13 +66,30 @@ func (c *Client) CommandHandler(command string) {
 			c.commandPingHandler()
 		case "game":
 			log.Debug("game inputted")
-			game, err := c.GetCurrentGame()
-			if err != nil {
-				log.Errorf("Error when getting current game: %v", err)
-			}
-			fmt.Println(game)
+			c.commandGameHandler()
+		case "move":
+			log.Debug("move inputted")
+			c.commandMoveHandler(args)
 		}
 	}
+}
+
+func (c *Client) commandMoveHandler(args []string) {
+	if len(args) > 0 {
+		move := args[0]
+		c.TakeMove(move)
+	}
+}
+
+func (c *Client) commandGameHandler() {
+
+	game, err := c.GetCurrentGame()
+	if err != nil {
+		log.Errorf("Error when getting current game: %v", err)
+	}
+	log.Info(game)
+	e := engine.NewEngine(engine.OptFenString(game.Fen))
+	e.Print(0)
 }
 
 func (c *Client) commandNewHandler(args []string) {
@@ -93,6 +111,7 @@ func (c *Client) commandNewHandler(args []string) {
 		}
 	} else {
 		log.Debug("No args provided to new")
+		printNewHelp()
 	}
 }
 
