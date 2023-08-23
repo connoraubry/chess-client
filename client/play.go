@@ -63,6 +63,13 @@ func (c *Client) CommandHandler(command string) {
 		case "ping":
 			log.Debug("ping inputted")
 			c.commandPingHandler()
+		case "game":
+			log.Debug("game inputted")
+			game, err := c.GetCurrentGame()
+			if err != nil {
+				log.Errorf("Error when getting current game: %v", err)
+			}
+			fmt.Println(game)
 		}
 	}
 }
@@ -73,11 +80,15 @@ func (c *Client) commandNewHandler(args []string) {
 		case "game":
 			log.Debug("new game inputted")
 			log.Info("Creating a new game")
-			gameID, err := c.CreateNewGame()
+			res, err := c.CreateNewGame()
 			if err != nil {
 				log.Errorf("Error creating new game: %v", err)
 			} else {
-				log.WithField("id", gameID).Info("New game created")
+				fields := log.Fields{
+					"id":    res.ID,
+					"token": res.Token,
+				}
+				log.WithFields(fields).Info("New game created")
 			}
 		}
 	} else {

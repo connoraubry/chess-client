@@ -13,6 +13,7 @@ import (
 type ClientConfig struct {
 	Port   int
 	Server string
+	GameID int
 	Token  string
 	User   string
 	Color  string
@@ -95,6 +96,13 @@ func (c *Client) configSetColor(color string) bool {
 		printConfigSetColorHelp()
 	}
 	return res
+}
+
+func (c *Client) configSetGame(gameID int, token string) {
+	c.cfg.GameID = gameID
+	c.cfg.Token = token
+
+	SaveConfig(c.cfg)
 }
 
 func printConfigSetHelp() {

@@ -85,33 +85,61 @@ func (c *Client) Get(id int) (string, error) {
 }
 
 type createResp struct {
-	ID int
+	ID    int
+	Token string
 }
 
-func (c *Client) CreateNewGame() (int, error) {
+func (c *Client) CreateNewGame() (createResp, error) {
+	var result createResp
 	url := fmt.Sprintf("%v%v", c.getBaseAddress(), "create")
 	var request = []byte(`{}`)
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(request))
 	if err != nil {
-		return -1, err
+		return result, err
 	}
 	log.Info("Successfully sent /create POST request")
 
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return -1, err
+		return result, err
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return -1, fmt.Errorf("STATUS returned %v. %v", resp.Status, string(body))
+		return result, fmt.Errorf("STATUS returned %v. %v", resp.Status, string(body))
 	}
 
-	var result createResp
 	if err = json.Unmarshal(body, &result); err != nil {
-		return -1, err
+		return result, err
 	}
-	log.WithField("id", result.ID).Info("Received create response")
 
-	return result.ID, nil
+	c.configSetGame(result.ID, result.Token)
+	return result, nil
+}
+
+type gameResp struct {
+	ID      int
+	Fen     string
+	Done    bool
+	PgnPath string
+}
+
+func (c *Client) GetCurrentGame() (gameResp, error) {
+
+	var result gameResp
+	url := fmt.Sprintf("%v%v/%v", c.getBaseAddress(), "game", c.cfg.GameID)
+	resp, err := http.Get(url)
+	if err != nil {
+		return result, err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return result, err
+	}
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return result, fmt.Errorf("STATUS returned %v. %v", resp.Status, string(body))
+	}
+	err = json.Unmarshal(body, &result)
+	return result, err
 }
