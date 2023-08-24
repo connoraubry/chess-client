@@ -15,6 +15,13 @@ import (
 
 const TERM_HEADER = "chess-client> "
 
+type PlayType int
+
+const (
+	STANDARD PlayType = iota
+	INGAME
+)
+
 func (c *Client) PlayHandler() {
 
 	reader := bufio.NewReader(os.Stdin)
@@ -94,11 +101,14 @@ func (c *Client) commandJoinHandler(args []string) {
 		gameID, err := strconv.Atoi(gameIDstring)
 		if err != nil {
 			log.WithField("id", gameIDstring).Error("Unable to parse id into integer")
+			return
 		}
 		err = c.JoinGame(gameID)
 		if err != nil {
 			log.Errorf("Error joining game: %v", err)
+			return
 		}
+		fmt.Printf("Joined game %v\n", gameID)
 	} else {
 		helpJoin()
 	}
@@ -129,6 +139,7 @@ func (c *Client) commandNewHandler(args []string) {
 					"token": res.Token,
 				}
 				log.WithFields(fields).Info("New game created")
+				fmt.Printf("New game created. ID = %v\n", res.ID)
 			}
 		}
 	} else {
