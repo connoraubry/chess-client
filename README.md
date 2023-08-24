@@ -10,7 +10,7 @@ go 1.21 required.
 wget https://go.dev/dl/go1.21.0.linux-amd64.tar.gz
 sudo tar -C /usr/local -xf go1.21.0.linux-amd64.tar.gz
 
-echo 'export PATH="$PATH:/usr/local/go/bin"'
+export PATH="$PATH:/usr/local/go/bin"
 ```
 
 After installing go, download packages
