@@ -41,6 +41,7 @@ func (c *Client) Ping() {
 	}
 
 	log.WithField("resp", string(body)).Info("Ping responded")
+	fmt.Println(string(body))
 }
 
 func getTest(dest string) string {

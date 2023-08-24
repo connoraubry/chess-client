@@ -34,6 +34,7 @@ func (c *Client) commandConfigHandler(args []string) {
 		switch args[0] {
 		case "reset":
 			c.cfg = ResetConfig()
+			c.SetupColor()
 		case "set":
 			c.commandConfigSetHandler(args[1:])
 		default:
