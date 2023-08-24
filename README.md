@@ -8,7 +8,8 @@ go 1.21 required.
 
 ```bash
 wget https://go.dev/dl/go1.21.0.linux-amd64.tar.gz
-tar -C /usr/local/go -xf go1.21.0.linux-amd64.tar.gz
+sudo tar -C /usr/local -xf go1.21.0.linux-amd64.tar.gz
+
 echo "export PATH="$PATH:/usr/local/go/bin"
 ```
 
