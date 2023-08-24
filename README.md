@@ -27,7 +27,7 @@ make
 
 Either run the binary or build at runtime
 ```bash
-./bin/client
+./bin/chess
 
 go run main.go
 ```
