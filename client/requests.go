@@ -16,7 +16,13 @@ const API_PATH = "api/v1/"
 func (c *Client) getBaseAddress() string {
 	baseIP, _ := strings.CutSuffix(c.cfg.Server, "/")
 
-	addr := fmt.Sprintf("%v:%v/%v", baseIP, c.cfg.Port, API_PATH)
+	var addr string
+
+	if c.cfg.Port != -1 {
+		addr = fmt.Sprintf("%v:%v/%v", baseIP, c.cfg.Port, API_PATH)
+	} else {
+		addr = fmt.Sprintf("%v/%v", baseIP, API_PATH)
+	}
 	return addr
 }
 
@@ -173,5 +179,54 @@ func (c *Client) TakeMove(move string) error {
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return fmt.Errorf("STATUS returned %v. %v", resp.Status, string(body))
 	}
+	return nil
+}
+
+func (c *Client) JoinGame(gameID int) error {
+	log.WithField("id", gameID).Info("Joining game")
+	url := fmt.Sprintf("%v%v", c.getBaseAddress(), "join")
+
+	type JoinRequest struct {
+		ID int
+	}
+
+	req := JoinRequest{ID: gameID}
+	reqByte, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(reqByte))
+	if err != nil {
+		return err
+	}
+	log.Info("Successfully sent /join POST request")
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return fmt.Errorf("STATUS returned %v. %v", resp.Status, string(body))
+	}
+
+	type JoinResponse struct {
+		ID    int
+		Token string
+	}
+
+	var result JoinResponse
+	if err = json.Unmarshal(body, &result); err != nil {
+		return err
+	}
+
+	fields := log.Fields{"id": result.ID, "token": result.Token}
+	log.WithFields(fields).Info("Received Join response")
+
+	c.cfg.GameID = result.ID
+	c.cfg.Token = result.Token
+	SaveConfig(c.cfg)
+
 	return nil
 }

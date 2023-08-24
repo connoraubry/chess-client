@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/connoraubry/chessbot-go/engine"
@@ -58,6 +59,7 @@ func (c *Client) CommandHandler(command string) {
 			c.commandNewHandler(args)
 		case "join":
 			log.Debug("join inputted")
+			c.commandJoinHandler(args)
 		case "info":
 			log.Debug("info inputted")
 			fmt.Printf("%+v\n", c)
@@ -77,10 +79,30 @@ func (c *Client) CommandHandler(command string) {
 func (c *Client) commandMoveHandler(args []string) {
 	if len(args) > 0 {
 		move := args[0]
-		c.TakeMove(move)
+		err := c.TakeMove(move)
+		if err != nil {
+			log.Errorf("Error taking move: %v", err)
+		}
+	} else {
+		helpMove()
+	}
+
+}
+func (c *Client) commandJoinHandler(args []string) {
+	if len(args) > 0 {
+		gameIDstring := args[0]
+		gameID, err := strconv.Atoi(gameIDstring)
+		if err != nil {
+			log.WithField("id", gameIDstring).Error("Unable to parse id into integer")
+		}
+		err = c.JoinGame(gameID)
+		if err != nil {
+			log.Errorf("Error joining game: %v", err)
+		}
+	} else {
+		helpJoin()
 	}
 }
-
 func (c *Client) commandGameHandler() {
 
 	game, err := c.GetCurrentGame()

@@ -11,12 +11,12 @@ import (
 )
 
 type ClientConfig struct {
-	Port   int
-	Server string
-	GameID int
-	Token  string
-	User   string
-	Color  string
+	Port      int
+	Server    string
+	GameID    int
+	Token     string
+	User      string
+	TermColor string
 }
 
 const CONFIG_PATH = "./config.yaml"
@@ -86,12 +86,12 @@ func (c *Client) commandConfigSetHandler(args []string) {
 
 func (c *Client) configSetColor(color string) bool {
 	log.Debugf("Requesting color change to %v", color)
-	oldColor := c.cfg.Color
-	c.cfg.Color = color
+	oldColor := c.cfg.TermColor
+	c.cfg.TermColor = color
 	res := c.SetupColor()
 
 	if !res {
-		c.cfg.Color = oldColor
+		c.cfg.TermColor = oldColor
 		log.Errorf("Invalid color: %v", color)
 		printConfigSetColorHelp()
 	}
@@ -140,7 +140,7 @@ func ResetConfig() ClientConfig {
 	return NewConfig()
 }
 func NewConfig() ClientConfig {
-	c := ClientConfig{Port: 3030, Server: "http://localhost", Color: "white"}
+	c := ClientConfig{Port: -1, Server: "http://localhost", TermColor: "white"}
 	SaveConfig(c)
 	return c
 }

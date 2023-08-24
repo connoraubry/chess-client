@@ -46,7 +46,7 @@ func (c *Client) SetupLogging(logLevel string) {
 }
 
 func (c *Client) SetupColor() bool {
-	switch c.cfg.Color {
+	switch c.cfg.TermColor {
 	case "red":
 		c.colorHandler = color.FgRed
 	case "yellow":

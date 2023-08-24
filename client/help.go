@@ -51,6 +51,12 @@ func (c *Client) commandHelpHandler(args []string) {
 			fmt.Println(HelpBuilder("Information on the chess cli", "info", no_commands))
 		case "new":
 			helpNew(args[1:])
+		case "move":
+			helpMove()
+		case "join":
+			helpJoin()
+		case "game":
+			helpGame()
 		case "quit":
 			fmt.Println(HelpBuilder("Quit the client", "quit", no_commands))
 		default:
@@ -60,8 +66,10 @@ func (c *Client) commandHelpHandler(args []string) {
 		var helpLine = []entry{
 			{"help [command]", "For information on a command"},
 			{"config [options]", "For configuring the client"},
+			{"game", "Print the current game"},
 			{"new [options]", "Create a new game"},
 			{"join [options]", "Join an existing game"},
+			{"move [options]", "Make a move in joined game"},
 			{"info", "Information on the client"},
 			{"ping", "Ping the server. Test connection"},
 			{"quit", "Quit"},
@@ -69,7 +77,16 @@ func (c *Client) commandHelpHandler(args []string) {
 		fmt.Println(HelpBuilder("Chess client", "[command] [options]", helpLine))
 	}
 }
+func helpMove() {
+	fmt.Println(HelpBuilder("Move a piece on the current game", "move [Move]", []entry{}))
 
+}
+func helpJoin() {
+	fmt.Println(HelpBuilder("Join an existing game", "join [GameID]", []entry{}))
+}
+func helpGame() {
+	fmt.Println(HelpBuilder("Print the current game", "game", []entry{}))
+}
 func helpNew(args []string) {
 	if len(args) > 0 {
 		switch args[0] {
