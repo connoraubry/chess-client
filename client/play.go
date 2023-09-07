@@ -121,7 +121,7 @@ func (c *Client) commandGameHandler() {
 	}
 	log.Info(game)
 	e := engine.NewEngine(engine.OptFenString(game.Fen))
-	e.Print(0)
+	e.Print(0, game.LastMove)
 }
 
 func (c *Client) commandNewHandler(args []string) {
@@ -130,7 +130,14 @@ func (c *Client) commandNewHandler(args []string) {
 		case "game":
 			log.Debug("new game inputted")
 			log.Info("Creating a new game")
-			res, err := c.CreateNewGame()
+
+			var isDev bool
+
+			if len(args) > 1 && args[1] == "dev" {
+				isDev = true
+			}
+
+			res, err := c.CreateNewGame(isDev)
 			if err != nil {
 				log.Errorf("Error creating new game: %v", err)
 			} else {

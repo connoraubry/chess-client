@@ -96,11 +96,20 @@ type createResp struct {
 	Token string
 }
 
-func (c *Client) CreateNewGame() (createResp, error) {
+func (c *Client) CreateNewGame(isDev bool) (createResp, error) {
 	var result createResp
 	url := fmt.Sprintf("%v%v", c.getBaseAddress(), "create")
-	var request = []byte(`{}`)
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(request))
+	type CreateGameRequest struct {
+		IsDev bool
+	}
+
+	req := CreateGameRequest{IsDev: isDev}
+	reqByte, err := json.Marshal(req)
+	if err != nil {
+		return result, err
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(reqByte))
 	if err != nil {
 		return result, err
 	}
@@ -125,10 +134,10 @@ func (c *Client) CreateNewGame() (createResp, error) {
 }
 
 type gameResp struct {
-	ID      int
-	Fen     string
-	Done    bool
-	PgnPath string
+	ID       int
+	Fen      string
+	Done     bool
+	LastMove string
 }
 
 func (c *Client) GetCurrentGame() (gameResp, error) {

@@ -62,7 +62,6 @@ func (c *Client) SetupColor() bool {
 	case "white":
 		c.colorHandler = color.FgWhite
 	default:
-		c.colorHandler = color.FgWhite
 		return false
 	}
 	return true
